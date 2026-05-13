@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Royal Table — Instrucciones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:       #c9a84c;
+      --gold-light: #f5d98b;
+      --gold-mid:   #a8873c;
+      --gold-dim:   rgba(201,168,76,0.4);
+      --bg:         #07060a;
+      --surface:    rgba(255,255,255,0.03);
+      --border:     rgba(201,168,76,0.15);
+      --text:       #d4c9a8;
+      --text-dim:   rgba(212,201,168,0.5);
+      --red:        #c0392b;
+      --green:      #27ae60;
+      --blue:       #2980b9;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: radial-gradient(ellipse at 50% 0%, #1a1208 0%, #0a0805 40%, #07060a 100%);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+    /* ── Layout ── */
+    .wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 60px 32px 100px;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      text-align: center;
+      margin-bottom: 64px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .site-header .suits {
+      font-size: 22px;
+      letter-spacing: 8px;
+      color: var(--gold-dim);
+      margin-bottom: 16px;
+      display: block;
+    }
+    .site-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      color: var(--gold-light);
+      letter-spacing: 6px;
+      text-shadow: 0 0 40px rgba(201,168,76,0.3);
+      margin-bottom: 8px;
+    }
+    .site-header .subtitle {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── Navegación lateral ── */
+    nav.toc {
+      position: fixed;
+      left: max(16px, calc(50% - 500px));
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+    }
+    nav.toc a {
+      font-size: 10px;
+      color: var(--gold-dim);
+      text-decoration: none;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-family: 'Playfair Display', serif;
+      transition: color 0.2s;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      opacity: 0.6;
+    }
+    nav.toc a:hover { color: var(--gold-light); opacity: 1; }
+
+    @media (max-width: 1100px) { nav.toc { display: none; } }
+
+    /* ── Secciones ── */
+    section {
+      margin-bottom: 72px;
+      scroll-margin-top: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-symbol {
+      font-size: 32px;
+      color: var(--gold);
+      flex-shrink: 0;
+      text-shadow: 0 0 16px rgba(201,168,76,0.4);
+    }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(18px, 3vw, 26px);
+      font-weight: 700;
+      color: var(--gold-light);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── Subsecciones ── */
+    h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin: 28px 0 12px;
+    }
+
+    p {
+      color: var(--text);
+      margin-bottom: 12px;
+      font-weight: 300;
+    }
+
+    /* ── Cards de reglas ── */
+    .rule-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .rule-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--gold), transparent);
+    }
+    .rule-card.red::before   { background: linear-gradient(180deg, var(--red), transparent); }
+    .rule-card.green::before { background: linear-gradient(180deg, var(--green), transparent); }
+    .rule-card.blue::before  { background: linear-gradient(180deg, var(--blue), transparent); }
+
+    .rule-card strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold-light);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .rule-card.red strong    { color: #e74c3c; }
+    .rule-card.green strong  { color: #2ecc71; }
+    .rule-card.blue strong   { color: #3498db; }
+
+    /* ── Steps ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 16px 0;
+    }
+    .step {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+    .step:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 36px;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--gold-dim), transparent);
+    }
+    .step-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 2px;
+      background: rgba(201,168,76,0.06);
+    }
+    .step-content {
+      padding: 4px 0 24px;
+      flex: 1;
+    }
+    .step-content strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 12px;
+      color: var(--gold-light);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .step-content p {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin: 0;
+    }
+
+    /* ── Tabla de valores ── */
+    .value-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .value-table th {
+      font-family: 'Playfair Display', serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: rgba(201,168,76,0.05);
+    }
+    .value-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(201,168,76,0.06);
+      color: var(--text);
+      font-weight: 300;
+    }
+    .value-table tr:last-child td { border-bottom: none; }
+    .value-table .highlight { color: var(--gold-light); font-weight: 500; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin: 2px 3px;
+    }
+    .badge-gold  { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+    .badge-red   { background: rgba(192,57,43,0.15);  color: #e74c3c;     border: 1px solid rgba(192,57,43,0.3); }
+    .badge-green { background: rgba(46,204,113,0.15); color: #2ecc71;     border: 1px solid rgba(46,204,113,0.3); }
+    .badge-blue  { background: rgba(52,152,219,0.15); color: #3498db;     border: 1px solid rgba(52,152,219,0.3); }
+
+    /* ── Tip box ── */
+    .tip {
+      background: rgba(201,168,76,0.05);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .tip::before {
+      content: '◆ ';
+      color: var(--gold);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      margin: 40px 0;
+    }
+
+    /* ── Back button ── */
+    .back-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: var(--gold-dim);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+      z-index: 200;
+    }
+    .back-btn:hover {
+      color: var(--gold-light);
+      border-color: rgba(201,168,76,0.6);
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      color: rgba(201,168,76,0.2);
+      font-size: 11px;
+      letter-spacing: 3px;
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      font-family: 'Playfair Display', serif;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="back-btn" onclick="window.close()" href="#">← CERRAR</a>
+
+  <!-- Navegación lateral -->
+  <nav class="toc">
+    <a href="#general">General</a>
+    <a href="#carta-mayor">Carta Mayor</a>
+    <a href="#blackjack">Black Jack</a>
+    <a href="#baccarat">Baccarat</a>
+  </nav>
+
+  <div class="wrapper">
+
+    <!-- ── HEADER ── -->
+    <header class="site-header">
+      <span class="suits">♠ ♥ ♦ ♣</span>
+      <h1>ROYAL TABLE</h1>
+      <p class="subtitle">Guía completa de reglas y mecánicas</p>
+    </header>
+
+
+    <!-- ══════════════════════════════════════════════
+         SECCIÓN 0 — CÓMO FUNCIONA LA MESA
+    ═══════════════════════════════════════════════ -->
+    <section id="general">
+      <div class="section-header">
+        <span class="section-symbol">♦</span>
+        <h2>Cómo funciona la mesa</h2>
+      </div>
+
+      <p>
+        Royal Table es una mesa de cartas virtual diseñada para ser usada por
+        <strong style="color:var(--gold-light)">un anfitrión</strong> mientras el resto de
+        los participantes observan por videollamada. El anfitrión controla todo desde
+        su pantalla: baraja, reparte, revela y gestiona los turnos.
+      </p>
+
+      <h3>El anfitrión</h3>
+      <p>
+        El jugador 1 es siempre el anfitrión (HOST). Es la única persona frente
+        a la pantalla. Los demás jugadores participan a voz y ven las acciones
+        en tiempo real a través de la cámara del anfitrión.
+      </p>
+
+      <h3>Colores de jugadores</h3>
+      <p>
+        Cada jugador tiene un color neón asignado que aparece en el borde de
+        sus cartas y su casilla. Estos colores se asignan al crear la mesa y
+        pueden personalizarse antes de comenzar.
+      </p>
+
+      <h3>Barajeo libre</h3>
+      <div class="rule-card">
+        <strong>Barajar antes de repartir</strong>
+        El mazo se puede barajar cuantas veces se quiera antes de repartir.
+        La animación de abanico confirma cada barajeo. El botón
+        <span class="badge badge-gold">REPARTIR CARTAS</span> solo aparece
+        después del primer barajeo.
+      </div>
+
+      <h3>Botón Atrás</h3>
+      <p>
+        En todo momento hay un botón <span class="badge badge-gold">← ATRÁS</span>
+        en la esquina superior izquierda. Permite retroceder un paso en cualquier
+        momento — útil si se olvida algo o se quiere corregir una acción.
+      </p>
+
+      <h3>Temas visuales</h3>
+      <p>
+        Desde el botón <span class="badge badge-gold">◐</span> en la esquina
+        inferior derecha se puede cambiar el tema visual en cualquier momento:
+      </p>
+      <table class="value-table">
+        <thead>
+          <tr><th>Tema</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="highlight">LUJO</td><td>Negro y dorado. Tipografía Playfair Display. Mesa verde oscura.</td></tr>
+          <tr><td class="highlight">CLÁSICO</td><td>Verde casino tradicional. Tipografía IM Fell English.</td></tr>
+          <tr><td class="highlight">MODERNO</td><td>Gris antracita y plata. Tipografía DM Sans.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="divider"></div>
+
+
+    <!-- ══════════════════════════════════════════════
+         SECCIÓN 1 — CARTA MAYOR
+    ═══════════════════════════════════════════════ -->
+    <section id="carta-mayor">
+      <div class="section-header">
+        <span class="section-symbol">♠</span>
+        <h2>Carta Mayor</h2>
+      </div>
+
+      <p>
+        El juego más directo de los tres. Cada jugador elige una carta de las
+        dispersas en la mesa. Gana quien tenga el valor más alto.
+      </p>
+
+      <h3>Valores de las cartas</h3>
+      <table class="value-table">
+        <thead>
+          <tr><th>Carta</th><th>Valor</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2 – 10</td><td>Su valor numérico</td></tr>
+          <tr><td>J (Jota)</td><td class="highlight">10</td></tr>
+          <tr><td>Q (Reina)</td><td class="highlight">10</td></tr>
+          <tr><td>K (Rey)</td><td class="highlight">10</td></tr>
+          <tr><td>A (As)</td><td class="highlight">11</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Secuencia de juego</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Barajar</strong>
+            <p>El anfitrión toca el mazo para barajarlo. Se puede barajar cuantas veces se quiera antes de continuar.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Repartir en mesa</strong>
+            <p>Se colocan en la mesa <em>N + 5</em> cartas boca abajo dispersas, donde N es la cantidad de jugadores. Todas tienen la cara inversa.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Elección por turnos</strong>
+            <p>El indicador muestra qué jugador debe elegir. Ese jugador, a voz, indica cuál carta quiere. El anfitrión toca esa carta. Su borde se ilumina con el color del jugador. Luego le toca al siguiente.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Revelar</strong>
+            <p>Cuando todos los jugadores tienen su carta, aparece el botón <span class="badge badge-gold">REVELAR CARTAS</span>. Al presionarlo, todas las cartas se voltean simultáneamente.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <strong>Ganador</strong>
+            <p>La carta con el valor más alto gana. La carta ganadora se agranda con efecto de brillo. Dos segundos después aparece en el centro de la pantalla el nombre del ganador.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Empate y Revancha</h3>
+      <div class="rule-card">
+        <strong>¿Qué pasa si hay empate?</strong>
+        Si dos o más jugadores tienen el mismo valor más alto, aparecen los botones
+        <span class="badge badge-gold">REVANCHA</span> y
+        <span class="badge badge-gold">NUEVA PARTIDA</span>.
+        Al elegir Revancha, <em>solo los jugadores empatados</em> participan en
+        una nueva ronda con las mismas mecánicas. Se repite hasta que haya
+        un ganador único.
+      </div>
+
+      <div class="tip">
+        El anfitrión puede tocar cualquier carta boca abajo para verla brevemente
+        antes de que un jugador la elija, sin que se revele a los demás (mientras
+        no esté en modo revelar global).
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+
+    <!-- ══════════════════════════════════════════════
+         SECCIÓN 2 — BLACK JACK
+    ═══════════════════════════════════════════════ -->
+    <section id="blackjack">
+      <div class="section-header">
+        <span class="section-symbol">♥</span>
+        <h2>Black Jack</h2>
+      </div>
+
+      <p>
+        El objetivo es sumar exactamente 21 o llegar lo más cerca posible
+        sin pasarse. El As es la carta más versátil: puede valer 1 u 11
+        según convenga.
+      </p>
+
+      <h3>Valores de las cartas</h3>
+      <table class="value-table">
+        <thead>
+          <tr><th>Carta</th><th>Valor</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2 – 10</td><td>Su valor numérico</td></tr>
+          <tr><td>J, Q, K</td><td class="highlight">10</td></tr>
+          <tr><td>A (As)</td><td class="highlight">1 u 11 — el que más convenga</td></tr>
+        </tbody>
+      </table>
+
+      <div class="rule-card green">
+        <strong>Black Jack Natural</strong>
+        Si un jugador recibe 21 exacto con sus 2 primeras cartas (As + figura o 10),
+        tiene un <em>Black Jack natural</em>. Sus cartas se agrandan automáticamente
+        y gana de inmediato, sin continuar la ronda.
+      </div>
+
+      <h3>Secuencia de juego</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Barajar</strong>
+            <p>El anfitrión baraja el mazo una o más veces.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Repartir</strong>
+            <p>Cada jugador recibe 2 cartas boca abajo. Los bordes de las cartas muestran el color del jugador dueño.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Revelar</strong>
+            <p>Al presionar <span class="badge badge-gold">REVELAR CARTAS</span> todas las cartas se voltean. Si alguien tiene Black Jack, se resuelve inmediatamente.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Turnos libres</strong>
+            <p>El anfitrión toca la casilla del jugador que quiere actuar. Esa casilla se ilumina y aparecen los botones de acción.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <strong>Resultado</strong>
+            <p>Al terminar todos los turnos aparece automáticamente el ganador y la tabla de puntajes.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Acciones disponibles</h3>
+      <div class="rule-card blue">
+        <strong>Pedir Carta (HIT)</strong>
+        El jugador recibe una carta adicional. Si su total supera 21,
+        queda eliminado automáticamente con estado
+        <span class="badge badge-red">BUST</span>.
+      </div>
+      <div class="rule-card">
+        <strong>Plantarse (STAND)</strong>
+        El jugador se queda con su mano actual sin pedir más cartas.
+        Su casilla muestra <span class="badge badge-gold">PLANTADO</span>.
+      </div>
+
+      <h3>Reglas especiales por cantidad de jugadores</h3>
+
+      <div class="rule-card green">
+        <strong>2 Jugadores</strong>
+        La dinámica es más tensa. Si uno de los dos se pasa de 21, el otro
+        gana automáticamente sin importar su puntaje actual. Si uno llega
+        exactamente a 21, también gana inmediatamente.
+      </div>
+
+      <div class="rule-card blue">
+        <strong>3 o más jugadores</strong>
+        Los jugadores que se pasan de 21 quedan eliminados pero
+        el juego continúa entre los demás. El anfitrión puede seguir
+        actuando en nombre de cada jugador restante. La partida termina
+        cuando ningún jugador activo puede seguir, o cuando se usa el
+        botón <span class="badge badge-gold">VER RESULTADO</span>.
+      </div>
+
+      <h3>Desempate</h3>
+      <p>
+        Si dos o más jugadores tienen el mismo puntaje final sin pasarse,
+        todos son declarados ganadores. No hay revancha automática en
+        Black Jack — se inicia una nueva ronda completa.
+      </p>
+
+      <div class="tip">
+        El As se ajusta automáticamente. Si un jugador tiene As + 9 = 20
+        y pide otra carta que sería 10, el As baja a 1 para dar 20
+        en lugar de 30.
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+
+    <!-- ══════════════════════════════════════════════
+         SECCIÓN 3 — BACCARAT
+    ═══════════════════════════════════════════════ -->
+    <section id="baccarat">
+      <div class="section-header">
+        <span class="section-symbol">♦</span>
+        <h2>Baccarat</h2>
+      </div>
+
+      <p>
+        En Baccarat no juegas con tus propias cartas — apostar a qué lado
+        ganará: <strong style="color:#3498db">Jugador</strong> o
+        <strong style="color:#e74c3c">Banca</strong>. Las cartas se reparten
+        automáticamente siguiendo reglas fijas.
+      </p>
+
+      <h3>Valores de las cartas</h3>
+      <table class="value-table">
+        <thead>
+          <tr><th>Carta</th><th>Valor en Baccarat</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2 – 9</td><td>Su valor numérico</td></tr>
+          <tr><td>10, J, Q, K</td><td class="highlight">0</td></tr>
+          <tr><td>A (As)</td><td class="highlight">1</td></tr>
+        </tbody>
+      </table>
+
+      <div class="rule-card">
+        <strong>Solo cuentan las unidades</strong>
+        Si la suma de las cartas supera 9, solo cuenta el dígito de las
+        unidades. Por ejemplo: 7 + 8 = 15 → valor = <strong style="color:var(--gold-light)">5</strong>.
+        El máximo posible es 9.
+      </div>
+
+      <h3>Natural — fin automático</h3>
+      <div class="rule-card green">
+        <strong>Natural 8 o Natural 9</strong>
+        Si el Jugador o la Banca obtienen 8 o 9 con sus 2 primeras cartas,
+        se declara <em>Natural</em> y no se reparten más cartas.
+        Se resuelve directamente con esos valores.
+      </div>
+
+      <h3>Secuencia de juego</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Barajar</strong>
+            <p>El anfitrión baraja una o más veces.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Apuestas a voz</strong>
+            <p>Antes de repartir, cada jugador dice en voz alta a qué lado apuesta: Jugador, Banca o Empate. No se registra en pantalla — es entre los jugadores.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Repartir boca abajo</strong>
+            <p>Se reparten 2 cartas al lado Jugador y 2 a la Banca, todas boca abajo en orden: J → B → J → B.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Revelar y aplicar reglas</strong>
+            <p>Al presionar <span class="badge badge-gold">REVELAR CARTAS</span>, las cartas se voltean y se aplican automáticamente las reglas de tercera carta.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <strong>Resultado</strong>
+            <p>Gana el lado con mayor valor (0–9). En caso de empate sin apuestas a empate, se abre una ronda extra.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Reglas de tercera carta</h3>
+      <p>
+        Las terceras cartas se reparten automáticamente siguiendo estas reglas oficiales:
+      </p>
+
+      <div class="rule-card blue">
+        <strong>Tercera carta del Jugador</strong>
+        El lado Jugador pide tercera carta si su total es 0, 1, 2, 3, 4 o 5.
+        Si su total es 6 o 7, se planta. Si tiene Natural (8 o 9), no pide.
+      </div>
+
+      <div class="rule-card">
+        <strong>Tercera carta de la Banca</strong>
+        Las reglas de la Banca dependen de su total y de la tercera carta
+        del Jugador (si la tuvo):
+      </div>
+
+      <table class="value-table">
+        <thead>
+          <tr><th>Total Banca</th><th>Acción</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0, 1, 2</td><td class="highlight">Siempre pide carta</td></tr>
+          <tr><td>3</td><td>Pide, salvo que la 3ª carta del Jugador fue 8</td></tr>
+          <tr><td>4</td><td>Pide si la 3ª carta del Jugador fue 2, 3, 4, 5, 6 o 7</td></tr>
+          <tr><td>5</td><td>Pide si la 3ª carta del Jugador fue 4, 5, 6 o 7</td></tr>
+          <tr><td>6</td><td>Pide si la 3ª carta del Jugador fue 6 o 7</td></tr>
+          <tr><td>7</td><td class="highlight">Siempre se planta</td></tr>
+          <tr><td>8, 9</td><td class="highlight">Natural — no pide</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Ronda de empate</h3>
+      <div class="rule-card green">
+        <strong>¿Qué pasa si hay empate?</strong>
+        Si el Jugador y la Banca terminan con el mismo valor, se abre una
+        ronda especial de empate. Cada jugador hace una nueva apuesta
+        (Jugador, Banca o Empate) y se reparte una carta extra a cada lado.
+        Se resuelve con los nuevos totales. Si vuelve a haber empate,
+        la ronda se repite.
+      </div>
+
+      <h3>Pagos de referencia</h3>
+      <table class="value-table">
+        <thead>
+          <tr><th>Apuesta</th><th>Pago</th><th>Nota</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="highlight">Jugador</td><td>1 a 1</td><td>Ganas lo mismo que apostaste</td></tr>
+          <tr><td class="highlight">Banca</td><td>1 a 1</td><td>Con 5% de comisión tradicional</td></tr>
+          <tr><td class="highlight">Empate</td><td>8 a 1</td><td>Alto riesgo, alto premio</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        Los pagos son referenciales — Royal Table no gestiona fichas ni dinero.
+        Los jugadores acuerdan las apuestas entre ellos antes de comenzar.
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <footer>
+      ♠ ♥ ♦ ♣ &nbsp;&nbsp; ROYAL TABLE &nbsp;&nbsp; ♣ ♦ ♥ ♠
+    </footer>
+
+  </div>
+</body>
+</html>

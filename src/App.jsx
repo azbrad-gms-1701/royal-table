@@ -229,7 +229,7 @@ export default function App() {
 
         {/* Instrucciones */}
         <FloatingButton
-          onClick={() => window.open("public/instrucciones.html", "_blank")}
+          onClick={() => window.open("/instrucciones.html", "_blank")}
           theme={theme}
           title="Instrucciones"
         >

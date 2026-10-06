@@ -1,365 +1,65 @@
-import { useState } from "react";
-import { useTheme } from "./context/ThemeContext";
-import { usePlayers } from "./context/PlayersContext";
-import SetupModal from "./components/SetupModal";
-import TableFelt from "./components/TableFelt";
-import GoldButton from "./components/GoldButton";
-import BackButton from "./components/BackButton";
-import CartaMayor from "./games/CartaMayor";
-import BlackJack from "./games/BlackJack";
-import Baccarat from "./games/Baccarat";
-import "./index.css";
+import { useEffect, useState } from 'react'
+import { CartaMayor, BlackJack, Baccarat } from './games/Games.jsx'
+import { CartaMayorVsPc } from './games/CartaMayorVsPc.jsx'
+import { MultiplayerDuel } from './games/MultiplayerDuel.jsx'
+import { Solitaire } from './games/Solitaire.jsx'
+import { HighLow } from './games/HighLow.jsx'
+import { GAMES, SOLO_GAME_IDS } from './game/config.js'
+import { CardBack, CardFace } from './components/Table.jsx'
+import { createDeck, shuffleDeck, SUITS } from './game/rules.js'
+import './App.css'
 
-const GAMES = [
-  { id: "cartamayor", label: "Carta Mayor", symbol: "♠",
-    desc: "Cada jugador elige una carta. La más alta gana." },
-  { id: "blackjack",  label: "Black Jack",  symbol: "♥",
-    desc: "Llega a 21 sin pasarte. As = 1 u 11." },
-  { id: "baccarat",   label: "Baccarat",    symbol: "♦",
-    desc: "Jugador vs Banca. Solo cuentan las unidades." },
-];
+const gameSymbols = { solitario: '♣', 'alta-baja': '↑', 'carta-mayor': '♠', blackjack: '21', baccarat: '♦' }
 
-export default function App() {
-  const { theme, themeKey, setThemeKey, themes } = useTheme();
-  const { players } = usePlayers();
-
-  const [setupDone, setSetupDone]         = useState(false);
-  const [activeGame, setActiveGame]       = useState(null);
-  const [showThemePicker, setShowThemePicker] = useState(false);
-
-  const handleStart = () => setSetupDone(true);
-  const handleBack  = () => {
-    if (activeGame) setActiveGame(null);
-    else            setSetupDone(false);
-  };
-
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: theme.bg,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "60px 20px 80px",
-      gap: "24px",
-      fontFamily: theme.font,
-      transition: "background 0.4s",
-    }}>
-
-      {!setupDone && <SetupModal onStart={handleStart} />}
-      {setupDone  && <BackButton onClick={handleBack} />}
-
-      {/* ── Header ───────────────────────────────────────────────────────── */}
-      <div style={{ textAlign: "center" }}>
-        <h1 style={{
-          fontSize: "clamp(20px, 3vw, 34px)",
-          color: theme.accentLight,
-          letterSpacing: "6px",
-          fontFamily: theme.font,
-          fontWeight: "800",
-          margin: 0,
-          textShadow: `0 0 30px ${theme.accent}88, 0 2px 4px rgba(0,0,0,0.5)`,
-        }}>
-          ♠ CARD'S AZ ♦
-        </h1>
-
-        <p style={{
-          color: theme.textDim,
-          fontSize: "10px",
-          letterSpacing: "4px",
-          marginTop: "6px",
-          fontFamily: theme.font,
-        }}>
-          MESA PRIVADA DE CARTAS
-        </p>
-
-        {/* Marca personal */}
-        <div style={{
-          marginTop: "10px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "10px",
-        }}>
-          <div style={{
-            width: "36px", height: "1px",
-            background: `linear-gradient(90deg, transparent, ${theme.accent}50)`,
-          }} />
-          <span style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: "10px",
-            color: theme.accent,
-            letterSpacing: "3px",
-            fontStyle: "italic",
-            opacity: 0.45,
-            userSelect: "none",
-          }}>
-            A̶z̶ Brad
-          </span>
-          <div style={{
-            width: "36px", height: "1px",
-            background: `linear-gradient(90deg, ${theme.accent}50, transparent)`,
-          }} />
-        </div>
-      </div>
-
-      {/* ── Lobby ────────────────────────────────────────────────────────── */}
-      {setupDone && !activeGame && (
-        <TableFelt>
-
-          {/* Badges de jugadores */}
-          <div style={{
-            display: "flex", flexWrap: "wrap",
-            gap: "8px", justifyContent: "center",
-          }}>
-            {players.map(p => {
-              const hex  = p.color?.hex  || theme.accent;
-              const glow = p.color?.glow || `${theme.accent}66`;
-              return (
-                <div key={p.name} style={{
-                  fontSize: "11px",
-                  fontFamily: theme.font,
-                  color: hex,
-                  border: `1px solid ${hex}55`,
-                  borderRadius: "20px",
-                  padding: "3px 14px",
-                  background: `${hex}12`,
-                  boxShadow: `0 0 8px ${glow}`,
-                  letterSpacing: "1px",
-                }}>
-                  {p.name}
-                </div>
-              );
-            })}
-          </div>
-
-          <div style={{
-            width: "60%", height: "1px",
-            background: `linear-gradient(90deg, transparent, ${theme.accent}30, transparent)`,
-          }} />
-
-          <p style={{
-            color: theme.textDim, fontSize: "11px",
-            letterSpacing: "3px", fontFamily: theme.font,
-          }}>
-            SELECCIONA UN JUEGO
-          </p>
-
-          <div style={{
-            display: "flex", gap: "20px",
-            flexWrap: "wrap", justifyContent: "center",
-          }}>
-            {GAMES.map(game => (
-              <GameCard
-                key={game.id}
-                game={game}
-                onClick={() => setActiveGame(game.id)}
-                theme={theme}
-              />
-            ))}
-          </div>
-
-        </TableFelt>
-      )}
-
-      {/* ── Juegos ───────────────────────────────────────────────────────── */}
-      {setupDone && activeGame === "cartamayor" && (
-        <CartaMayor onBack={() => setActiveGame(null)} />
-      )}
-      {setupDone && activeGame === "blackjack" && (
-        <BlackJack onBack={() => setActiveGame(null)} />
-      )}
-      {setupDone && activeGame === "baccarat" && (
-        <Baccarat onBack={() => setActiveGame(null)} />
-      )}
-
-      {/* ── Botones flotantes ─────────────────────────────────────────────── */}
-      <div style={{
-        position: "fixed", bottom: "16px", right: "16px",
-        display: "flex", gap: "8px", zIndex: 500,
-      }}>
-
-        {/* Selector de tema */}
-        <div style={{ position: "relative" }}>
-          {showThemePicker && (
-            <div style={{
-              position: "absolute",
-              bottom: "48px", right: 0,
-              background: "rgba(0,0,0,0.88)",
-              border: `1px solid ${theme.accent}35`,
-              borderRadius: "10px",
-              padding: "10px",
-              display: "flex", flexDirection: "column", gap: "6px",
-              backdropFilter: "blur(12px)",
-              animation: "fadeUp 0.2s ease",
-              minWidth: "130px",
-              boxShadow: `0 8px 32px rgba(0,0,0,0.6)`,
-            }}>
-              {Object.entries(themes).map(([key, t]) => (
-                <button
-                  key={key}
-                  onClick={() => { setThemeKey(key); setShowThemePicker(false); }}
-                  style={{
-                    background: themeKey === key ? `${theme.accent}20` : "transparent",
-                    border: `1px solid ${themeKey === key ? theme.accent : "transparent"}`,
-                    borderRadius: "6px",
-                    padding: "7px 14px",
-                    color: themeKey === key ? theme.accentLight : theme.textDim,
-                    fontFamily: theme.font,
-                    fontSize: "11px", fontWeight: "700",
-                    letterSpacing: "1.5px",
-                    cursor: "pointer", textAlign: "left",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {t.name}
-                </button>
-              ))}
-            </div>
-          )}
-          <FloatingButton
-            onClick={() => setShowThemePicker(p => !p)}
-            theme={theme}
-            title="Cambiar tema"
-          >
-            ◐
-          </FloatingButton>
-        </div>
-
-        {/* Instrucciones */}
-        <FloatingButton
-          onClick={() => window.open("/royal-table/public/instrucciones.html", "_blank")}
-          theme={theme}
-          title="Instrucciones"
-        >
-          ?
-        </FloatingButton>
-      </div>
-
-      {/* ── Firma fija inferior ───────────────────────────────────────────── */}
-      <div style={{
-        position: "fixed",
-        bottom: "16px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        pointerEvents: "none",
-        zIndex: 10,
-      }}>
-        <div style={{
-          width: "24px", height: "1px",
-          background: `linear-gradient(90deg, transparent, ${theme.accent}35)`,
-        }} />
-        <span style={{
-          fontFamily: "'Playfair Display', serif",
-          fontSize: "10px",
-          color: theme.accent,
-          letterSpacing: "3px",
-          fontStyle: "italic",
-          opacity: 0.3,
-        }}>
-          A̶z̶ Brad
-        </span>
-        <div style={{
-          width: "24px", height: "1px",
-          background: `linear-gradient(90deg, ${theme.accent}35, transparent)`,
-        }} />
-      </div>
-
-    </div>
-  );
+function Shell({ children }) {
+  return <div className="lobby-page"><header className="site-header"><a href="#inicio" className="brand" aria-label="Royal Table, inicio"><span className="brand-symbol">♛</span><span>Royal <em>Table</em></span></a><span className="header-label">Salón de juegos de cartas</span></header><main id="contenido" className="lobby-main" tabIndex={-1}>{children}</main><footer className="site-footer"><span>ROYAL TABLE</span><span>Elige una mesa. Aprende jugando.</span></footer></div>
 }
 
-// ── Tarjeta de juego ──────────────────────────────────────────────────────
-function GameCard({ game, onClick, theme }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        width: "170px", height: "210px",
-        border: hov
-          ? `1.5px solid ${theme.accent}bb`
-          : `1.5px solid ${theme.accent}28`,
-        borderRadius: "14px",
-        background: hov
-          ? `linear-gradient(145deg, ${theme.accent}18, ${theme.accent}08)`
-          : `linear-gradient(145deg, ${theme.accent}08, transparent)`,
-        display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center",
-        gap: "14px",
-        cursor: "pointer",
-        transition: "all 0.25s",
-        transform: hov ? "translateY(-5px)" : "none",
-        boxShadow: hov
-          ? `0 14px 32px rgba(0,0,0,0.5), 0 0 20px ${theme.accent}18`
-          : "none",
-        padding: "16px",
-      }}
-    >
-      <div style={{
-        fontSize: "56px",
-        color: theme.accentLight,
-        filter: hov
-          ? `drop-shadow(0 0 14px ${theme.accent})`
-          : `drop-shadow(0 2px 4px rgba(0,0,0,0.5))`,
-        transition: "filter 0.25s",
-        lineHeight: 1,
-      }}>
-        {game.symbol}
-      </div>
-      <div style={{
-        color: hov ? theme.accentLight : theme.text,
-        fontFamily: theme.font,
-        fontSize: "14px", fontWeight: "700",
-        letterSpacing: "2px", textAlign: "center",
-        transition: "color 0.25s",
-      }}>
-        {game.label.toUpperCase()}
-      </div>
-      <div style={{
-        color: theme.textDim,
-        fontFamily: theme.font,
-        fontSize: "10px", letterSpacing: "0.5px",
-        textAlign: "center", lineHeight: "1.5",
-        opacity: hov ? 1 : 0.6,
-        transition: "opacity 0.25s",
-      }}>
-        {game.desc}
-      </div>
-    </div>
-  );
+function Home() {
+  const [previewCard, setPreviewCard] = useState(() => shuffleDeck(createDeck())[0])
+  const drawPreview = () => setPreviewCard((current) => shuffleDeck(createDeck()).find((card) => card.id !== current.id))
+  return <Shell><div className="lobby-copy"><p className="section-kicker">Bienvenido a la mesa</p><h1>Elige cómo<br /><em>quieres jugar.</em></h1><p>Una partida para ti, o una mesa compartida con amigos y bots. Sin cuentas, apuestas ni puntos acumulados.</p><div className="hero-signature"><span className="signature-line" aria-hidden="true" />Baraja, juega, vuelve a empezar</div></div><div className="lobby-visual"><div className="lobby-table-glow" aria-hidden="true" /><div className="lobby-card lobby-card-two" aria-hidden="true"><CardBack /></div><button type="button" className="lobby-card lobby-card-one" onClick={drawPreview} aria-label="Sacar otra carta de muestra"><CardFace key={previewCard.id} card={previewCard} /></button><div className="lobby-medallion" aria-hidden="true">♛</div><span className="lobby-card-caption">Toca la carta para probar la baraja</span><span className="sr-only" role="status">Carta de muestra: {previewCard.rank} de {SUITS.find((suit) => suit.key === previewCard.suit).name}</span></div>
+    <section className="game-selection mode-selection" aria-labelledby="mode-title"><div className="selection-heading"><h2 id="mode-title">Tu lugar en la mesa</h2><span>Elige una forma de jugar</span></div><div className="mode-grid"><a className="mode-choice" href="#solo"><span className="mode-icon" aria-hidden="true">♠</span><span className="choice-number">01 / PARTIDA INDIVIDUAL</span><h3>Jugar solo</h3><p>Solitario y Alta o Baja sin rivales, más rondas de Carta Mayor, Black Jack y Baccarat.</p><strong>Explorar juegos <span aria-hidden="true">↗</span></strong></a><a className="mode-choice" href="#multijugador"><span className="mode-icon" aria-hidden="true">♛</span><span className="choice-number">02 / MESA COMPARTIDA</span><h3>Multijugador local</h3><p>Comparte este ordenador con otras personas o completa la mesa con hasta siete bots.</p><strong>Preparar mesa <span aria-hidden="true">↗</span></strong></a></div></section></Shell>
 }
 
-// ── Botón flotante ────────────────────────────────────────────────────────
-function FloatingButton({ children, onClick, theme, title }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      title={title}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        width: "38px", height: "38px",
-        borderRadius: "50%",
-        border: `1px solid ${theme.accent}${hov ? "80" : "35"}`,
-        background: hov ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.6)",
-        color: hov ? theme.accentLight : theme.textDim,
-        fontFamily: theme.font,
-        fontSize: "15px", fontWeight: "700",
-        cursor: "pointer",
-        backdropFilter: "blur(8px)",
-        transition: "all 0.2s",
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}
-    >
-      {children}
-    </button>
-  );
+function SoloLobby() {
+  return <Shell><div className="subpage-intro"><a className="back-link" href="#inicio">← Volver al inicio</a><p className="section-kicker">Partida individual</p><h1>Una mesa a tu ritmo.</h1><p>Solitario y Alta o Baja son solo tuyos, sin bots. Los demás ofrecen rondas breves contra la casa.</p></div><section className="game-selection" aria-labelledby="solo-title"><div className="selection-heading"><h2 id="solo-title">Elige un juego</h2><span>5 experiencias</span></div><div className="game-grid solo-grid">{SOLO_GAME_IDS.map((id) => { const game = GAMES[id]; return <article className="game-choice" key={id}><span className="choice-number">{game.number} / {['solitario', 'alta-baja'].includes(id) ? 'SIN RIVALES' : 'RONDA INDIVIDUAL'}</span><span className="choice-symbol" aria-hidden="true">{gameSymbols[id]}</span><h3>{game.name}</h3><p className="choice-intro">{game.intro}</p><div className="choice-actions"><a className="choice-link" href={`#${id}`}>Jugar <span aria-hidden="true">↗</span></a>{id === 'carta-mayor' && <a className="choice-link choice-link-secondary" href="#carta-mayor-pc">Contra un bot <span aria-hidden="true">↗</span></a>}</div></article> })}</div></section></Shell>
 }
+
+function Stepper({ label, value, min, max, onChange, hint }) {
+  return <div className="setup-stepper"><div><strong>{label}</strong><span>{hint}</span></div><div className="stepper-control"><button type="button" onClick={() => onChange(value - 1)} disabled={value <= min} aria-label={`Quitar ${label.toLowerCase()}`}>−</button><output aria-label={`${label}: ${value}`}>{value}</output><button type="button" onClick={() => onChange(value + 1)} disabled={value >= max} aria-label={`Añadir ${label.toLowerCase()}`}>+</button></div></div>
+}
+
+function MultiplayerLobby() {
+  const [humans, setHumans] = useState(2)
+  const [bots, setBots] = useState(0)
+  const changeHumans = (value) => { setHumans(value); setBots((current) => Math.min(current, 8 - value)) }
+  const changeBots = (value) => { setBots(value); setHumans((current) => Math.min(current, 8 - value)) }
+  const valid = humans + bots >= 2
+  return <Shell><div className="subpage-intro multiplayer-intro"><a className="back-link" href="#inicio">← Volver al inicio</a><p className="section-kicker">Multijugador local</p><h1>Prepara tu mesa.</h1><p>Las personas comparten este ordenador por turnos. Puedes sumar bots para completar hasta ocho puestos.</p></div><section className="table-setup" aria-labelledby="setup-title"><div className="setup-heading"><span aria-hidden="true">♛</span><div><p className="section-kicker">Carta Mayor · Variante Royal Table</p><h2 id="setup-title">Elige participantes</h2><p>Cada uno recibe tres cartas y juega una. La carta más alta gana; el as supera al rey.</p></div></div><div className="setup-controls"><Stepper label="Personas" value={humans} min={1} max={8 - bots} onChange={changeHumans} hint="Por turnos en este ordenador" /><Stepper label="Bots" value={bots} min={0} max={Math.min(7, 8 - humans)} onChange={changeBots} hint="Juegan su carta más alta" /></div><div className="setup-footer"><p>{humans + bots} de 8 puestos ocupados · {bots === 0 ? 'Mesa entre personas' : `${bots} ${bots === 1 ? 'bot' : 'bots'}`}{!valid && <span className="setup-warning"> · Añade otra persona o un bot.</span>}</p><a className={`setup-start ${!valid ? 'setup-disabled' : ''}`} href={valid ? `#duelo?h=${humans}&b=${bots}` : '#multijugador'} aria-disabled={!valid} onClick={!valid ? (event) => event.preventDefault() : undefined}>Entrar a la mesa <span aria-hidden="true">→</span></a></div></section><div className="setup-footnote"><span aria-hidden="true">✧</span> No hay conexión en línea, cuentas ni progreso guardado. Cada ronda es independiente.</div></Shell>
+}
+
+function route() {
+  const hash = window.location.hash.slice(1)
+  const id = hash.split('?')[0]
+  return { id: ['inicio', 'solo', 'multijugador'].includes(id) || GAMES[id] ? id : 'inicio', hash }
+}
+
+function duelSettings(hash) {
+  const query = new URLSearchParams(hash.split('?')[1] || '')
+  const humans = Math.min(8, Math.max(1, Number.parseInt(query.get('h'), 10) || 2))
+  const bots = Math.min(7, Math.max(0, Number.parseInt(query.get('b'), 10) || 0), 8 - humans)
+  return { humans, bots: humans + bots < 2 ? 1 : bots }
+}
+
+function App() {
+  const [location, setLocation] = useState(route)
+  useEffect(() => { const onHashChange = () => setLocation(route()); window.addEventListener('hashchange', onHashChange); return () => window.removeEventListener('hashchange', onHashChange) }, [])
+  useEffect(() => { document.title = GAMES[location.id] ? `${GAMES[location.id].name} · Royal Table` : 'Royal Table · Juegos de cartas'; window.scrollTo(0, 0) }, [location])
+  const skipToMain = (event) => { event.preventDefault(); document.getElementById('contenido')?.focus(); document.getElementById('contenido')?.scrollIntoView() }
+  const { id, hash } = location
+  const settings = id === 'duelo' ? duelSettings(hash) : null
+  return <><a className="skip-link" href="#contenido" onClick={skipToMain}>Saltar al contenido</a>{id === 'inicio' ? <Home /> : id === 'solo' ? <SoloLobby /> : id === 'multijugador' ? <MultiplayerLobby /> : id === 'solitario' ? <Solitaire /> : id === 'alta-baja' ? <HighLow /> : id === 'duelo' ? <MultiplayerDuel key={hash} {...settings} /> : id === 'carta-mayor' ? <CartaMayor /> : id === 'carta-mayor-pc' ? <CartaMayorVsPc /> : id === 'blackjack' ? <BlackJack /> : <Baccarat />}</>
+}
+
+export default App
